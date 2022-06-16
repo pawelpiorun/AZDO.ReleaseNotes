@@ -1,0 +1,92 @@
+﻿<Window x:Class="AZDO.ReleaseNotes.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="AZDO.ReleaseNotes"
+        Height="600"
+        Width="900">
+    <FrameworkElement.Resources>
+        <Style BasedOn="{StaticResource {x:Type TextBlock}}"
+               TargetType="{x:Type TextBlock}">
+            <Setter Property="Margin" Value="10,5" />
+        </Style>
+        <Style BasedOn="{StaticResource {x:Type TextBox}}"
+               TargetType="{x:Type TextBox}">
+            <Setter Property="Margin" Value="10" />
+            <Setter Property="Padding" Value="5" />
+        </Style>
+        <Style BasedOn="{StaticResource {x:Type DatePicker}}"
+               TargetType="{x:Type DatePicker}">
+            <Setter Property="Margin" Value="10" />
+            <Setter Property="Padding" Value="5" />
+        </Style>
+        <DataTemplate x:Key="CommitDataTemplate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>
+                    <Run Text="{Binding Comment, Mode=OneTime}" />
+                    <Run>[</Run>
+                    <Run Text="{Binding Id, Mode=OneTime}" />
+                    <Run>]</Run>
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="WorkItemDataTemplate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>
+                    <Hyperlink NavigateUri="{Binding Url, Mode=OneTime}" RequestNavigate="Hyperlink_RequestNavigate">
+                        <Hyperlink.Inlines>
+                            <Run Text="{Binding Id, Mode=OneTime}" />
+                            <Run>: </Run>
+                            <Run Text="{Binding Title, Mode=OneTime}" />
+                        </Hyperlink.Inlines>
+                    </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
+    </FrameworkElement.Resources>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <TextBlock>Project</TextBlock>
+                <TextBox Text="{Binding ProjectName}"/>
+                <TextBlock>Branch</TextBlock>
+                <TextBox Text="{Binding BranchName}" />
+            </StackPanel>
+            <StackPanel Grid.Column="1">
+                <TextBlock>Start date</TextBlock>
+                <DatePicker SelectedDate="{Binding StartDate}" />
+                <TextBlock>End date</TextBlock>
+                <DatePicker SelectedDate="{Binding EndDate}" />
+                <Button Command="{Binding RunSearchCommand}"
+                        Margin="10, 5">
+                    Run
+                </Button>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1">
+            <TabControl>
+                <TabItem Header="Commits">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Visible">
+                        <ItemsControl ItemsSource="{Binding Commits}"
+                              ItemTemplate="{StaticResource CommitDataTemplate}"/>
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem Header="Work items">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Visible">
+                        <ItemsControl ItemsSource="{Binding WorkItems}"
+                              ItemTemplate="{StaticResource WorkItemDataTemplate}"/>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</Window>
