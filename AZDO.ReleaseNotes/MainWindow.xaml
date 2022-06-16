@@ -70,6 +70,10 @@
                         Margin="10, 5">
                     Run
                 </Button>
+                <Button Command="{Binding ExportReleaseNotesCommand}"
+                        Margin="10, 5">
+                    Export
+                </Button>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">

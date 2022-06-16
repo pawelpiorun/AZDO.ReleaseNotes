@@ -4,8 +4,11 @@ using AZDO.ReleaseNotes.Requests;
 using AZDO.ReleaseNotes.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
 
 namespace AZDO.ReleaseNotes.ViewModels;
 
@@ -15,6 +18,7 @@ public class MainViewModel : NotifyPropertyChanged
     private string repositoryName = "";
     private string branchName = "";
     private bool isProcessing;
+    private bool isExporting;
     private DateTime startDate = DateTime.Today - TimeSpan.FromDays(3);
     private DateTime endDate = DateTime.Today;
     private readonly CommitsService commitsService;
@@ -25,6 +29,7 @@ public class MainViewModel : NotifyPropertyChanged
         Commits = new ObservableCollection<CommitViewModel>();
         WorkItems = new ObservableCollection<WorkItemViewModel>();
         RunSearchCommand = new RunSearchCommand(this);
+        ExportReleaseNotesCommand = new ExportReleaseNotesCommand(this);
         commitsService = new CommitsService();
         workItemsService = new WorkItemsService();
     }
@@ -69,17 +74,25 @@ public class MainViewModel : NotifyPropertyChanged
         set => Set(ref isProcessing, value);
     }
 
+    public bool IsExporting
+    {
+        get => isExporting;
+        set => Set(ref isExporting, value);
+    }
+
     public ObservableCollection<CommitViewModel> Commits { get; }
     public ObservableCollection<WorkItemViewModel> WorkItems { get; }
 
     public RunSearchCommand RunSearchCommand { get; }
+
+    public ExportReleaseNotesCommand ExportReleaseNotesCommand { get; }
 
     public async void Run()
     {
         if (string.IsNullOrEmpty(Settings.OrganizationUri)
             || string.IsNullOrEmpty(Settings.PersonalAccessToken))
         {
-            MessageBox.Show("Please setup OrganizationUri and PersonalAccessToken.");
+            System.Windows.MessageBox.Show("Please setup OrganizationUri and PersonalAccessToken.");
             return;
         }
 
@@ -113,5 +126,30 @@ public class MainViewModel : NotifyPropertyChanged
         }
 
         IsProcessing = false;
+    }
+    public async void Export()
+    {
+        IsExporting = true;
+
+        var saveDialog = new SaveFileDialog()
+        {
+            Filter = "Markup file (*.md)|*.md|Text files (*.txt)|*.txt|All files (*.*)|*.*",
+        };
+        _ = saveDialog.ShowDialog();
+        var fileName = saveDialog.FileName;
+        if (string.IsNullOrEmpty(fileName))
+        {
+            return;
+        }
+
+        var releaseNotes = WorkItems.Select(x => $"[{x.Id}: {x.Title}]({x.Url})");
+        await File.WriteAllLinesAsync(fileName, releaseNotes);
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = fileName,
+            UseShellExecute = true,
+        });
+
+        IsExporting = false;
     }
 }
