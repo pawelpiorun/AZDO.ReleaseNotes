@@ -12,6 +12,7 @@ namespace AZDO.ReleaseNotes.ViewModels;
 public class MainViewModel : NotifyPropertyChanged
 {
     private string projectName = "";
+    private string repositoryName = "";
     private string branchName = "";
     private bool isProcessing;
     private DateTime startDate = DateTime.Today - TimeSpan.FromDays(3);
@@ -32,6 +33,12 @@ public class MainViewModel : NotifyPropertyChanged
     {
         get => projectName;
         set => Set(ref projectName, value);
+    }
+
+    public string RepositoryName
+    {
+        get => repositoryName;
+        set => Set(ref repositoryName, value);
     }
 
     public string BranchName
@@ -80,6 +87,7 @@ public class MainViewModel : NotifyPropertyChanged
 
         var searchCommitsRequest = CommitSearchRequest.For(
             projectName,
+            repositoryName,
             branchName,
             FormattedStartDate,
             FormattedEndDate,

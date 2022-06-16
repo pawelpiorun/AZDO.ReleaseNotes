@@ -32,7 +32,7 @@ public class CommitsService
         };
         var commits = await gitClient.GetCommitsAsync(
             commitSearchRequestModel.ProjectName,
-            commitSearchRequestModel.ProjectName,
+            commitSearchRequestModel.RepositoryName,
             new GitQueryCommitsCriteria()
             {
                 IncludeWorkItems = commitSearchRequestModel.IncludeWorkItems,

@@ -56,6 +56,8 @@
             <StackPanel Grid.Column="0">
                 <TextBlock>Project</TextBlock>
                 <TextBox Text="{Binding ProjectName}"/>
+                <TextBlock>Repository</TextBlock>
+                <TextBox Text="{Binding RepositoryName}"/>
                 <TextBlock>Branch</TextBlock>
                 <TextBox Text="{Binding BranchName}" />
             </StackPanel>
